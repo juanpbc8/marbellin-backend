@@ -30,4 +30,16 @@ public class AdministradorServiceImpl implements AdministradorService {
     public void eliminar(Long id) {
         repo.deleteById(id);
     }
+
+    @Override
+    public Administrador buscarPorId(Long id) {
+        return repo.findById(id).orElse(null);
+    }
+
+    @Override
+    public Administrador buscarPorCorreoYContrasena(String correo, String contrasena) {
+        return repo.findByCorreoAndContrasena(correo, contrasena)
+                .orElse(null);
+    }
+
 }
