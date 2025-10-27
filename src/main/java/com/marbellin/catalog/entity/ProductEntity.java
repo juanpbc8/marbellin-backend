@@ -19,7 +19,7 @@ import java.util.List;
 public class ProductEntity extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long product_id;
+    private Long id;
 
     @NotBlank
     @Size(max = 120)

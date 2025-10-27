@@ -27,7 +27,7 @@ public class CategoryEntity {
 
     @ManyToOne
     @JoinColumn(name = "parent_category_id")
-    private CategoryEntity parent_category;
+    private CategoryEntity parentCategory;
 
     @ManyToMany(mappedBy = "categories")
     @Builder.Default

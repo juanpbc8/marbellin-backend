@@ -17,10 +17,10 @@ import java.util.Set;
 public class UserEntity extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long id;
 
     private String email;
-    private String password_hash;
+    private String passwordHash;
     private boolean enabled;
 
     @ManyToMany(fetch = FetchType.EAGER,
