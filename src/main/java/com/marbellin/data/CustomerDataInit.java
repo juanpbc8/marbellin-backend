@@ -5,6 +5,9 @@ import com.marbellin.customers.entity.CustomerEntity;
 import com.marbellin.customers.entity.enums.CustomerType;
 import com.marbellin.customers.entity.enums.DocumentType;
 import com.marbellin.customers.repository.CustomerRepository;
+import com.marbellin.iam.entity.UserEntity;
+import com.marbellin.iam.entity.enums.RoleEnum;
+import com.marbellin.iam.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -18,7 +21,9 @@ import java.util.function.BiFunction;
 @Order(1)
 @RequiredArgsConstructor
 public class CustomerDataInit implements CommandLineRunner {
+
     private final CustomerRepository customerRepository;
+    private final UserService userService;
 
     @Override
     public void run(String... args) {
@@ -26,6 +31,7 @@ public class CustomerDataInit implements CommandLineRunner {
             System.out.println("⚠️ Customers ya cargados. Omitiendo inicialización...");
             return;
         }
+
         System.out.println("🚀 Cargando datos iniciales de Customers + Addresses...");
 
         List<CustomerEntity> customers = new ArrayList<>();
@@ -35,25 +41,40 @@ public class CustomerDataInit implements CommandLineRunner {
                 (firstName, lastName) -> CustomerEntity.builder()
                         .firstName(firstName)
                         .lastName(lastName)
-                        .email(firstName.toLowerCase() + "." + lastName.toLowerCase() + "@gmail.com")
+                        .email(firstName.toLowerCase() + lastName.toLowerCase() + "@gmail.com")
                         .phoneNumber(generarTelefono())
                         .documentType(DocumentType.DNI)
                         .documentNumber(generarDni())
                         .customerType(CustomerType.NATURAL)
                         .build();
 
-        // Lista de nombres
+        // Lista de nombres (15 clientes, sin tildes)
         String[][] data = {
-                {"Juan", "Pérez"}, {"María", "García"}, {"Luis", "Ramírez"},
-                {"Ana", "Torres"}, {"Carlos", "Sánchez"}, {"Rosa", "Flores"},
-                {"Miguel", "Vargas"}, {"Lucía", "Cruz"}, {"Pedro", "Díaz"},
-                {"Elena", "Medina"}
+                {"Juan", "Perez"}, {"Maria", "Garcia"}, {"Luis", "Ramirez"},
+                {"Ana", "Torres"}, {"Carlos", "Sanchez"}, {"Rosa", "Flores"},
+                {"Miguel", "Vargas"}, {"Lucia", "Cruz"}, {"Pedro", "Diaz"},
+                {"Elena", "Medina"}, {"Sofia", "Lopez"}, {"Diego", "Castro"},
+                {"Andres", "Pineda"}, {"Valeria", "Rojas"}, {"Jorge", "Navarro"}
         };
 
         for (String[] d : data) {
             CustomerEntity c = buildCustomer.apply(d[0], d[1]);
+
+            // 🔹 Crear Address
             AddressEntity a = buildAddress(c);
             c.getAddresses().add(a);
+
+            // 🔹 Crear cuenta de usuario (solo para algunos)
+            if (Math.random() < 0.5) { // 50% de los clientes tendrán cuenta
+                UserEntity user = userService.createUser(
+                        c.getEmail(),
+                        "123456",
+                        RoleEnum.CUSTOMER
+                );
+                c.setUserAccount(user);
+                c.setEmail(user.getEmail()); // sincronizar email
+            }
+
             customers.add(c);
         }
 
@@ -65,7 +86,6 @@ public class CustomerDataInit implements CommandLineRunner {
         c2.getAddresses().add(buildAddress(c2));
 
         customerRepository.saveAll(customers);
-
         System.out.println("✅ Customers y direcciones cargados correctamente.");
     }
 

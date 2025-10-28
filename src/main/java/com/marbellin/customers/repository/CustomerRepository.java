@@ -1,16 +1,21 @@
 package com.marbellin.customers.repository;
 
 import com.marbellin.customers.entity.CustomerEntity;
+import com.marbellin.iam.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByDocumentNumber(String documentNumber);
+
+    Optional<CustomerEntity> findByUserAccount(UserEntity userAccount);
 
     // Para UPDATE: validar unicidad excluyendo el propio id
     boolean existsByEmailAndIdNot(String email, Long id);

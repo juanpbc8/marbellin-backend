@@ -13,6 +13,8 @@ import com.marbellin.customers.entity.enums.CustomerType;
 import com.marbellin.customers.mapper.CustomerMapper;
 import com.marbellin.customers.repository.CustomerRepository;
 import com.marbellin.customers.service.CustomerService;
+import com.marbellin.iam.entity.UserEntity;
+import com.marbellin.iam.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,7 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
     private final CustomerMapper customerMapper;
 
     // WEB CONTEXT (public site)
@@ -41,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         CustomerEntity entity = customerMapper.toEntity(request);
-        // Flujo web todo cliente es persona natural:
+        // Flujo web por defecto, tipo NATURAL
         if (entity.getCustomerType() == null) {
             entity.setCustomerType(CustomerType.NATURAL);
         }
@@ -155,5 +158,29 @@ public class CustomerServiceImpl implements CustomerService {
         // Elegimos una paginación “sana” si luego quieres sobrecargar con Pageable en el controller.
         Page<CustomerEntity> page = customerRepository.search(query == null ? "" : query.trim(), Pageable.ofSize(20));
         return customerMapper.toAdminResponseList(page.getContent());
+    }
+
+    public CustomerWebResponse createOrUpdateProfile(Long userId, CustomerWebRequest request) {
+        // 1. Buscar usuario
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: id=" + userId));
+
+        // 2. Intentar encontrar perfil existente
+        CustomerEntity customer = customerRepository.findByUserAccount(user)
+                .orElse(null);
+
+        if (customer == null) {
+            // Crear nuevo perfil
+            customer = customerMapper.toEntity(request);
+            customer.setUserAccount(user);
+            customer.setEmail(user.getEmail());
+        } else {
+            // Actualizar datos existentes
+            customerMapper.updateFromWebRequest(request, customer);
+        }
+
+        // 3. Guardar y devolver
+        customer = customerRepository.save(customer);
+        return customerMapper.toWebResponse(customer);
     }
 }

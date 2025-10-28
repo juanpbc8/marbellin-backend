@@ -30,6 +30,7 @@ public interface CustomerService {
 
     CustomerWebResponse patchProfile(Long id, CustomerWebPatchRequest request);
 
+    CustomerWebResponse createOrUpdateProfile(Long userId, CustomerWebRequest request);
     // ADMIN CONTEXT (CMS panel)
 
     /**
