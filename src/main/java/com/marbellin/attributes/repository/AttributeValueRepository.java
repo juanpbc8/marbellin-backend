@@ -3,5 +3,13 @@ package com.marbellin.attributes.repository;
 import com.marbellin.attributes.entity.AttributeValueEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AttributeValueRepository extends JpaRepository<AttributeValueEntity, Integer> {
+import java.util.List;
+import java.util.Optional;
+
+public interface AttributeValueRepository extends JpaRepository<AttributeValueEntity, Long> {
+    List<AttributeValueEntity> findByAttribute_Id(Long attributeId);
+
+    Optional<AttributeValueEntity> findByAttribute_IdAndAttributeValueNameIgnoreCase(Long attributeId, String valueName);
+
+    boolean existsByAttribute_IdAndAttributeValueNameIgnoreCase(Long attributeId, String valueName);
 }
