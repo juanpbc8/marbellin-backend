@@ -2,6 +2,8 @@ package com.marbellin.iam.entity;
 
 import com.marbellin.common.entity.AuditableEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.HashSet;
@@ -19,8 +21,14 @@ public class UserEntity extends AuditableEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Email
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @NotBlank
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
+    
     private boolean enabled;
 
     @ManyToMany(fetch = FetchType.EAGER,

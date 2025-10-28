@@ -6,12 +6,15 @@ import com.marbellin.customers.dto.web.CustomerWebRequest;
 import com.marbellin.customers.dto.web.CustomerWebResponse;
 import com.marbellin.customers.service.AddressService;
 import com.marbellin.customers.service.CustomerService;
+import com.marbellin.iam.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +26,7 @@ import java.util.List;
 public class PublicCustomerController {
     private final CustomerService customerService;
     private final AddressService addressService;
+    private final UserService userService;
 
     // CUSTOMER PROFILE
     @Operation(summary = "Register a new customer (checkout or signup)")
@@ -93,5 +97,18 @@ public class PublicCustomerController {
     ) {
         addressService.deleteAddress(customerId, addressId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Create or update customer profile (for logged-in users)")
+    @PostMapping("/profile")
+    public ResponseEntity<CustomerWebResponse> createOrUpdateProfile(
+            @Valid @RequestBody CustomerWebRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        var user = userService.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        var response = customerService.createOrUpdateProfile(user.getId(), request);
+        return ResponseEntity.ok(response);
     }
 }

@@ -1,0 +1,7 @@
+package com.marbellin.common.storage;
+
+import org.springframework.web.multipart.MultipartFile;
+
+public interface FileStorageService {
+    String uploadProductImage(MultipartFile file);
+}

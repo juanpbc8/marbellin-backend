@@ -33,7 +33,7 @@ public class CategoryEntity {
     @Builder.Default
     private List<ProductEntity> products = new ArrayList<>();
 
-    @OneToMany(mappedBy = "parent_category",
+    @OneToMany(mappedBy = "parentCategory",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     @Builder.Default

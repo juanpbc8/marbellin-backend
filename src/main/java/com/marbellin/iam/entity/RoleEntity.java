@@ -1,5 +1,6 @@
 package com.marbellin.iam.entity;
 
+import com.marbellin.iam.entity.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,5 +17,7 @@ public class RoleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String roleName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role_name")
+    private RoleEnum roleName;
 }
