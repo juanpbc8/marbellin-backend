@@ -1,7 +1,7 @@
 package com.marbellin.billing.entity.enums;
 
 public enum InvoiceStatus {
-    ISSUED,             // emitido correctamente
-    VOIDED,             // anulado/comunicado a SUNAT
-    PENDING_SUBMISSION  // pendiente de envío a SUNAT
+    EMITIDO,             // emitido correctamente
+    ANULADO,             // anulado/comunicado a SUNAT
+    PENDIENTE_ENVIO  // pendiente de envío a SUNAT
 }

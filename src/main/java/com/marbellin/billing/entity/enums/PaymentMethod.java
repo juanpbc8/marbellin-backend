@@ -1,5 +1,5 @@
 package com.marbellin.billing.entity.enums;
 
 public enum PaymentMethod {
-    CARD, YAPE, PLIN, BANK_TRANSFER
+    TARJETA, YAPE, PLIN, TRANSFERENCIA_BANCARIA
 }
