@@ -3,6 +3,8 @@ package com.marbellin.data;
 import com.marbellin.catalog.dto.CategoryCreateDto;
 import com.marbellin.catalog.dto.ProductCreateDto;
 import com.marbellin.catalog.dto.ProductVariantCreateDto;
+import com.marbellin.catalog.repository.CategoryRepository;
+import com.marbellin.catalog.repository.ProductRepository;
 import com.marbellin.catalog.service.CategoryService;
 import com.marbellin.catalog.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,8 @@ public class CatalogDataInit implements CommandLineRunner {
 
     private final CategoryService categoryService;
     private final ProductService productService;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     // Listas maestras para generación aleatoria
     private static final List<String> ALL_COLORS = List.of(
@@ -33,6 +37,11 @@ public class CatalogDataInit implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        if (categoryRepository.count() > 0 || productRepository.count() > 0) {
+            System.out.println("⚠️ CatalogDataInit: Ya existen registros en la base de datos (Categorías o Productos).");
+            System.out.println("⏭️ Omitiendo inicialización para evitar duplicados.");
+            return;
+        }
         System.out.println("👙 Inicializando catálogo de Marbellin (Con Variantes)...");
 
         try {

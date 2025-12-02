@@ -21,6 +21,12 @@ public class RoleUserDataInit implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        if (roleRepository.count() > 0 || userRepository.count() > 0) {
+            System.out.println("⚠️ RoleUserDataInit: Ya existen Roles o Usuarios en la base de datos.");
+            System.out.println("⏭️ Omitiendo creación de Admin y Roles para evitar conflictos.");
+            return;
+        }
+        
         System.out.println("🚀 Inicializando roles y usuario admin...");
 
         // 1️⃣ Crear roles si no existen
