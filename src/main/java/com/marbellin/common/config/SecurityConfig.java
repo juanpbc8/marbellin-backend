@@ -24,22 +24,24 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // puedes habilitarlo más adelante si manejas tokens CSRF
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        // Swagger & docs
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs.yaml",
-                                "/v3/api-docs.json",
-                                "/swagger-resources/**",
-                                "/webjars/**"
-                        ).permitAll()
-                        // Público
-                        .requestMatchers("/api/public/**", "/api/auth/**").permitAll()
-                        // Panel admin
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // Resto: requiere login
-                        .anyRequest().authenticated()
+                                // Swagger & docs
+                                .requestMatchers(
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/v3/api-docs/**",
+                                        "/v3/api-docs.yaml",
+                                        "/v3/api-docs.json",
+                                        "/swagger-resources/**",
+                                        "/webjars/**"
+                                ).permitAll()
+                                // Público
+                                .requestMatchers("/api/public/**", "/api/auth/**").permitAll()
+                                // Panel admin
+//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/admin/**").permitAll()
+                                // Resto: requiere login
+//                        .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                         .loginProcessingUrl("/api/auth/login")
