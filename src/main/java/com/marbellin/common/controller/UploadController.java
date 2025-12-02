@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/admin/uploads")
 @RequiredArgsConstructor
@@ -23,13 +21,11 @@ public class UploadController {
 
     @Operation(summary = "Upload one or more product images")
     @PostMapping("/products")
-    public ResponseEntity<List<String>> uploadProductImages(
-            @RequestParam("files") List<MultipartFile> files
+    public ResponseEntity<String> uploadProductImages(
+            @RequestParam("file") MultipartFile file
     ) {
-        List<String> urls = files.stream()
-                .map(fileStorageService::uploadProductImage)
-                .toList();
+        String url = fileStorageService.uploadProductImage(file);
 
-        return ResponseEntity.ok(urls);
+        return ResponseEntity.ok(url);
     }
 }

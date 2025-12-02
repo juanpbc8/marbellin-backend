@@ -1,10 +1,10 @@
 package com.marbellin.data;
 
-import com.marbellin.iam.entity.RoleEntity;
-import com.marbellin.iam.entity.enums.RoleEnum;
-import com.marbellin.iam.repository.RoleRepository;
-import com.marbellin.iam.repository.UserRepository;
-import com.marbellin.iam.service.UserService;
+import com.marbellin.auth.entity.RoleEntity;
+import com.marbellin.auth.entity.RoleEnum;
+import com.marbellin.auth.repository.RoleRepository;
+import com.marbellin.auth.repository.UserRepository;
+import com.marbellin.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -35,8 +35,11 @@ public class RoleUserDataInit implements CommandLineRunner {
         }
 
         // 2️⃣ Crear usuario admin por defecto
-        if (userRepository.findByEmail("admin@marbellin.com").isEmpty()) {
-            userService.createUser("admin@marbellin.com", "admin123", RoleEnum.ADMIN);
+        if (userRepository.findByEmail("admin@pixelpro.com").isEmpty()) {
+
+            // El method en UserService.java se llama 'register' y espera un Set de roles.
+            userService.register("admin@marbellin.com", "admin123", RoleEnum.ADMIN);
+
             System.out.println("✅ Usuario admin creado: admin@marbellin.com / admin123");
         } else {
             System.out.println("⚠️ Usuario admin ya existe, se omite creación.");

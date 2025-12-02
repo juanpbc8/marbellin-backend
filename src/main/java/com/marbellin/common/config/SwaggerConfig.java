@@ -12,8 +12,8 @@ public class SwaggerConfig {
     public OpenAPI marbellinOpenApi() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Marbellin E-Commerce API")
-                        .description("REST API for the Marbellin lingerie e-commerce platform")
+                        .title("marbellin E-Commerce API")
+                        .description("API REST para la platforma e-commerce marbellin")
                         .version("1.0.0"));
     }
 }
