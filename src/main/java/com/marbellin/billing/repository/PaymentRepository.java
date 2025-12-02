@@ -1,7 +1,7 @@
 package com.marbellin.billing.repository;
 
-import com.marbellin.billing.entity.Payment;
+import com.marbellin.billing.entity.PaymentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
+public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
 }

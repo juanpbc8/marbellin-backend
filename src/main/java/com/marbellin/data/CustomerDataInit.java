@@ -5,9 +5,9 @@ import com.marbellin.customers.entity.CustomerEntity;
 import com.marbellin.customers.entity.enums.CustomerType;
 import com.marbellin.customers.entity.enums.DocumentType;
 import com.marbellin.customers.repository.CustomerRepository;
-import com.marbellin.iam.entity.UserEntity;
-import com.marbellin.iam.entity.enums.RoleEnum;
-import com.marbellin.iam.service.UserService;
+import com.marbellin.auth.entity.UserEntity;
+import com.marbellin.auth.entity.RoleEnum;
+import com.marbellin.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -64,16 +64,14 @@ public class CustomerDataInit implements CommandLineRunner {
             AddressEntity a = buildAddress(c);
             c.getAddresses().add(a);
 
-            // 🔹 Crear cuenta de usuario (solo para algunos)
-            if (Math.random() < 0.5) { // 50% de los clientes tendrán cuenta
-                UserEntity user = userService.createUser(
-                        c.getEmail(),
-                        "123456",
-                        RoleEnum.CUSTOMER
-                );
-                c.setUserAccount(user);
-                c.setEmail(user.getEmail()); // sincronizar email
-            }
+            // 🔹 Crear cuenta de usuario
+            UserEntity user = userService.register(
+                    c.getEmail(),
+                    "12345678",
+                    RoleEnum.CLIENTE
+            );
+            c.setUserAccount(user);
+            c.setEmail(user.getEmail());
 
             customers.add(c);
         }

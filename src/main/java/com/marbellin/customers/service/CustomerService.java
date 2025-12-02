@@ -1,67 +1,34 @@
 package com.marbellin.customers.service;
 
-import com.marbellin.customers.dto.admin.CustomerAdminPatchRequest;
-import com.marbellin.customers.dto.admin.CustomerAdminRequest;
-import com.marbellin.customers.dto.admin.CustomerAdminResponse;
-import com.marbellin.customers.dto.web.CustomerWebPatchRequest;
-import com.marbellin.customers.dto.web.CustomerWebRequest;
-import com.marbellin.customers.dto.web.CustomerWebResponse;
+import com.marbellin.customers.dto.*;
+import com.marbellin.customers.entity.enums.CustomerType;
+import com.marbellin.customers.entity.enums.DocumentType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface CustomerService {
-    // WEB CONTEXT (public site)
+    // Admin endpoints
+    Page<CustomerDto> getAllCustomers(String search, DocumentType documentType, CustomerType customerType, Pageable pageable);
 
-    /**
-     * Register a new customer (either guest or account-based).
-     */
-    CustomerWebResponse registerCustomer(CustomerWebRequest request);
+    CustomerDto getCustomerById(Long id);
 
-    /**
-     * Get the profile of a customer (usually authenticated).
-     */
-    CustomerWebResponse getProfile(Long customerId);
+    CustomerDto updateCustomer(Long id, CustomerUpdateDto dto);
 
-    /**
-     * Update basic customer information from the public site.
-     */
-    CustomerWebResponse updateProfile(Long customerId, CustomerWebRequest request);
+    // Store endpoints (My Account)
+    CustomerDto createProfile(String email, CustomerProfileUpdateDto dto);
 
-    CustomerWebResponse patchProfile(Long id, CustomerWebPatchRequest request);
+    CustomerDto getMyProfile(String email);
 
-    CustomerWebResponse createOrUpdateProfile(Long userId, CustomerWebRequest request);
-    // ADMIN CONTEXT (CMS panel)
+    CustomerDto updateMyProfile(String email, CustomerProfileUpdateDto dto);
 
-    /**
-     * Get all customers, optionally paginated.
-     */
-    List<CustomerAdminResponse> getAllCustomers(Pageable pageable);
+    void changePassword(String email, String newPassword);
 
-    /**
-     * Retrieve detailed information of a specific customer.
-     */
-    CustomerAdminResponse getCustomerById(Long id);
+    List<AddressDto> getMyAddresses(String email);
 
-    /**
-     * Create a new customer manually from the admin panel.
-     */
-    CustomerAdminResponse createCustomer(CustomerAdminRequest request);
+    AddressDto addAddress(String email, AddressCreateDto dto);
 
-    /**
-     * Update customer details from the admin panel.
-     */
-    CustomerAdminResponse updateCustomer(Long id, CustomerAdminRequest request);
-
-    CustomerAdminResponse patchCustomer(Long id, CustomerAdminPatchRequest request);
-
-    /**
-     * Delete a customer (preferably soft delete if implemented).
-     */
-    void deleteCustomer(Long id);
-
-    /**
-     * Search customers by name, email, or document number.
-     */
-    List<CustomerAdminResponse> searchCustomers(String query);
+    void deleteAddress(String email, Long addressId);
 }
+

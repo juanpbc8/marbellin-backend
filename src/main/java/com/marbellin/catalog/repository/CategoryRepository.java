@@ -1,17 +1,18 @@
 package com.marbellin.catalog.repository;
 
 import com.marbellin.catalog.entity.CategoryEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
-    List<CategoryEntity> findByParentCategoryIsNull();
 
-    List<CategoryEntity> findByParentCategoryId(Long parentCategoryId);
+    // Solo mantenemos la versión paginada
+    Page<CategoryEntity> findByParentCategoryId(Long parentCategoryId, Pageable pageable);
 
-    Optional<CategoryEntity> findByName(String name);
-
-    boolean existsByName(String name);
+    // Este query es eficiente para validaciones antes de borrar
+    @Query("SELECT COUNT(p) FROM ProductEntity p WHERE p.category.id = :categoryId")
+    long countProductsByCategory(@Param("categoryId") Long categoryId);
 }

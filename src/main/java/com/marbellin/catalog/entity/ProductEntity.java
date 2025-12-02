@@ -2,10 +2,9 @@ package com.marbellin.catalog.entity;
 
 import com.marbellin.common.entity.AuditableEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,27 +20,27 @@ public class ProductEntity extends AuditableEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(max = 120)
-    @Column(nullable = false, length = 120)
+    @Column(nullable = false)
     private String name;
 
-    @NotBlank
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(mappedBy = "product",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    @Builder.Default
-    private List<ProductImageEntity> images = new ArrayList<>();
+    @Column(nullable = false)
+    private BigDecimal price;
 
-    @ManyToMany
-    @JoinTable(
-            name = "product_categories",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(nullable = false)
+    private String status; //ACTIVO, INACTIVO
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private CategoryEntity category;
+
+    // RELACIÓN NUEVA: Un producto tiene muchas variantes
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<CategoryEntity> categories = new ArrayList<>();
+    private List<ProductVariantEntity> variants = new ArrayList<>();
 }

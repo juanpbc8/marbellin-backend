@@ -1,62 +1,21 @@
 package com.marbellin.customers.mapper;
 
-import com.marbellin.customers.dto.admin.CustomerAdminPatchRequest;
-import com.marbellin.customers.dto.admin.CustomerAdminRequest;
-import com.marbellin.customers.dto.admin.CustomerAdminResponse;
-import com.marbellin.customers.dto.web.CustomerWebPatchRequest;
-import com.marbellin.customers.dto.web.CustomerWebRequest;
-import com.marbellin.customers.dto.web.CustomerWebResponse;
+import com.marbellin.customers.dto.CustomerDto;
+import com.marbellin.customers.dto.CustomerUpdateDto;
 import com.marbellin.customers.entity.CustomerEntity;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
-import java.util.List;
-
-@Mapper(
-        componentModel = "spring",
-        uses = {AddressMapper.class},
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring", uses = {AddressMapper.class})
 public interface CustomerMapper {
 
-    // Web mappings
-    CustomerEntity toEntity(CustomerWebRequest dto);
+    @Mapping(target = "documentType", expression = "java(entity.getDocumentType().name())")
+    @Mapping(target = "customerType", expression = "java(entity.getCustomerType().name())")
+    CustomerDto toDto(CustomerEntity entity);
 
-    CustomerWebResponse toWebResponse(CustomerEntity entity);
-
-    // PUT
-    void updateFromWebRequest(CustomerWebRequest dto, @MappingTarget CustomerEntity entity);
-
-    // PATCH: copia solo campos no nulos
-    void updateFromWebPatch(CustomerWebPatchRequest dto, @MappingTarget CustomerEntity entity);
-
-    // Admin mappings
-    CustomerEntity toEntity(CustomerAdminRequest dto);
-
-    CustomerAdminResponse toAdminResponse(CustomerEntity entity);
-
-    List<CustomerAdminResponse> toAdminResponseList(List<CustomerEntity> entities);
-
-    // PUT
-    void updateFromAdminRequest(CustomerAdminRequest dto, @MappingTarget CustomerEntity entity);
-
-    // PATCH
-    void updateFromAdminPatch(CustomerAdminPatchRequest dto, @MappingTarget CustomerEntity entity);
-
-    // ---------- HELPERS ----------
-    // Si quisieras formatear nombres, emails, etc., puedes usar @AfterMapping
-    @AfterMapping
-    default void normalize(@MappingTarget CustomerEntity entity) {
-        if (entity.getEmail() != null) {
-            entity.setEmail(entity.getEmail().trim().toLowerCase());
-        }
-        if (entity.getFirstName() != null) {
-            entity.setFirstName(entity.getFirstName().trim());
-        }
-        if (entity.getLastName() != null) {
-            entity.setLastName(entity.getLastName().trim());
-        }
-    }
+    @BeanMapping(
+            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+            unmappedTargetPolicy = ReportingPolicy.IGNORE
+    )
+    void updateEntityFromDto(CustomerUpdateDto dto, @MappingTarget CustomerEntity entity);
 }
+

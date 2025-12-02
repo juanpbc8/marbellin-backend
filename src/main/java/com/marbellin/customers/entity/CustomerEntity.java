@@ -1,9 +1,9 @@
 package com.marbellin.customers.entity;
 
+import com.marbellin.auth.entity.UserEntity;
 import com.marbellin.common.entity.AuditableEntity;
 import com.marbellin.customers.entity.enums.CustomerType;
 import com.marbellin.customers.entity.enums.DocumentType;
-import com.marbellin.iam.entity.UserEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

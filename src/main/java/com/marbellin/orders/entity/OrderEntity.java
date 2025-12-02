@@ -1,5 +1,7 @@
 package com.marbellin.orders.entity;
 
+import com.marbellin.billing.entity.InvoiceEntity;
+import com.marbellin.billing.entity.PaymentEntity;
 import com.marbellin.common.entity.AuditableEntity;
 import com.marbellin.customers.entity.AddressEntity;
 import com.marbellin.customers.entity.CustomerEntity;
@@ -11,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,16 +51,34 @@ public class OrderEntity extends AuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_address_id")
-    private AddressEntity shippingAddress; // puede ser null si es STORE_PICKUP
+    private AddressEntity shippingAddress; // puede ser null si es RECOJO_EN_TIENDA
 
-    @OneToOne(mappedBy = "order",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private OrderDetailEntity detail;
+    @NotNull
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal subtotal;
+
+    @NotNull
+    @Column(name = "shipping_cost", nullable = false, precision = 10, scale = 2)
+    private BigDecimal shippingCost;
+
+    @NotNull
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal discount;
+
+    @NotNull
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal total;
 
     @OneToMany(mappedBy = "order",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     @Builder.Default
     private List<OrderItemEntity> items = new ArrayList<>();
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private InvoiceEntity invoice;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<PaymentEntity> payments = new ArrayList<>();
 }

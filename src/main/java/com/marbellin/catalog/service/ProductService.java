@@ -1,27 +1,20 @@
 package com.marbellin.catalog.service;
 
-import com.marbellin.catalog.dto.admin.ProductAdminCreateRequest;
-import com.marbellin.catalog.dto.admin.ProductAdminResponse;
-import com.marbellin.catalog.dto.admin.ProductAdminUpdateRequest;
-import com.marbellin.catalog.dto.web.ProductWebResponse;
+import com.marbellin.catalog.dto.ProductCreateDto;
+import com.marbellin.catalog.dto.ProductDto;
+import com.marbellin.catalog.dto.ProductUpdateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
+    ProductDto create(ProductCreateDto dto);
 
-    // Admin
-    ProductAdminResponse create(ProductAdminCreateRequest request);
+    ProductDto findById(Long id);
 
-    ProductAdminResponse update(Long id, ProductAdminUpdateRequest request);
+    Page<ProductDto> findAll(String search, String status, Long categoryId, Pageable pageable);
 
-    void delete(Long id);
+    ProductDto update(Long id, ProductUpdateDto dto);
 
-    ProductAdminResponse findById(Long id);
-
-    Page<ProductAdminResponse> findAll(Pageable pageable, String keyword);
-
-    // Public Web
-    Page<ProductWebResponse> findAllPublic(Pageable pageable, String keyword, Long categoryId);
-
-    ProductWebResponse findPublicById(Long id);
+    // NUEVO: Eliminar físicamente una variante específica (limpieza de errores)
+    void deleteVariant(Long variantId);
 }

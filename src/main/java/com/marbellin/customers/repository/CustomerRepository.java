@@ -1,7 +1,8 @@
 package com.marbellin.customers.repository;
 
 import com.marbellin.customers.entity.CustomerEntity;
-import com.marbellin.iam.entity.UserEntity;
+import com.marbellin.customers.entity.enums.CustomerType;
+import com.marbellin.customers.entity.enums.DocumentType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,24 +12,25 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> {
-    boolean existsByEmail(String email);
 
-    boolean existsByDocumentNumber(String documentNumber);
+    Optional<CustomerEntity> findByEmail(String email);
 
-    Optional<CustomerEntity> findByUserAccount(UserEntity userAccount);
-
-    // Para UPDATE: validar unicidad excluyendo el propio id
-    boolean existsByEmailAndIdNot(String email, Long id);
-
-    boolean existsByDocumentNumberAndIdNot(String documentNumber, Long id);
-
-    // Búsqueda admin (ILIKE para búsqueda case-insensitive)
     @Query("""
-            SELECT c
-            FROM CustomerEntity c
-            WHERE LOWER(CONCAT(COALESCE(c.firstName,''),' ',COALESCE(c.lastName,''))) LIKE LOWER(CONCAT('%', :q, '%'))
-               OR LOWER(c.email) LIKE LOWER(CONCAT('%', :q, '%'))
-               OR LOWER(c.documentNumber) LIKE LOWER(CONCAT('%', :q, '%'))
+            SELECT c FROM CustomerEntity c
+            WHERE (
+                :search IS NULL OR :search = '' OR
+                LOWER(c.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+                LOWER(c.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR
+                LOWER(c.email) LIKE LOWER(CONCAT('%', :search, '%')) OR
+                LOWER(c.documentNumber) LIKE LOWER(CONCAT('%', :search, '%'))
+            )
+            AND (:documentType IS NULL OR c.documentType = :documentType)
+            AND (:customerType IS NULL OR c.customerType = :customerType)
             """)
-    Page<CustomerEntity> search(@Param("q") String query, Pageable pageable);
+    Page<CustomerEntity> findByFilters(
+            @Param("search") String search,
+            @Param("documentType") DocumentType documentType,
+            @Param("customerType") CustomerType customerType,
+            Pageable pageable
+    );
 }

@@ -1,46 +1,41 @@
 package com.marbellin.catalog.mapper;
 
-
-import com.marbellin.catalog.dto.admin.ProductAdminCreateRequest;
-import com.marbellin.catalog.dto.admin.ProductAdminResponse;
-import com.marbellin.catalog.dto.admin.ProductAdminUpdateRequest;
-import com.marbellin.catalog.dto.web.ProductWebResponse;
-import com.marbellin.catalog.entity.CategoryEntity;
+import com.marbellin.catalog.dto.*;
 import com.marbellin.catalog.entity.ProductEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import com.marbellin.catalog.entity.ProductVariantEntity;
+import org.mapstruct.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-@Mapper(
-        componentModel = "spring",
-        uses = {CategoryMapper.class, ProductImageMapper.class},
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class})
 public interface ProductMapper {
 
-    // Admin
-    ProductEntity toEntity(ProductAdminCreateRequest request);
+    // --- LECTURA (Entity -> DTO) ---
+    @Mapping(target = "variants", source = "variants")
+    ProductDto toDto(ProductEntity entity);
 
-    ProductAdminResponse toAdminResponse(ProductEntity entity);
+    // Method auxiliar para convertir una variante entidad a DTO
+    ProductVariantDto toVariantDto(ProductVariantEntity entity);
 
-    // PATCH merge update
-    void updateEntityFromRequest(ProductAdminUpdateRequest request, @MappingTarget ProductEntity entity);
+    // --- CREACIÓN (DTO -> Entity) ---
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "variants", source = "variants")
+    // MapStruct usará el method de abajo
+    ProductEntity toEntity(ProductCreateDto dto);
 
-    // Web
-    @Mapping(target = "categoryNames", expression = "java(mapCategoryNames(entity))")
-    ProductWebResponse toWebResponse(ProductEntity entity);
+    // Method auxiliar para convertir variante DTO a Entidad
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "product", ignore = true)
+    // Se setea en el servicio
+    ProductVariantEntity toVariantEntity(ProductVariantCreateDto dto);
 
-    List<ProductWebResponse> toWebResponseList(List<ProductEntity> entities);
 
-    default List<String> mapCategoryNames(ProductEntity entity) {
-        if (entity.getCategories() == null) return List.of();
-        return entity.getCategories().stream()
-                .map(CategoryEntity::getName)
-                .collect(Collectors.toList());
-    }
-
+    // --- ACTUALIZACIÓN (DTO -> Entity) ---
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "category", ignore = true) // Se gestiona en el servicio
+//    @Mapping(target = "createdAt", ignore = true)
+//    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "variants", ignore = true)
+    // IGNORAMOS variantes en el update simple
+    void updateEntityFromDto(ProductUpdateDto dto, @MappingTarget ProductEntity entity);
 }

@@ -1,27 +1,17 @@
 package com.marbellin.catalog.service;
 
-import com.marbellin.catalog.dto.admin.CategoryAdminCreateRequest;
-import com.marbellin.catalog.dto.admin.CategoryAdminResponse;
-import com.marbellin.catalog.dto.admin.CategoryAdminUpdateRequest;
-import com.marbellin.catalog.dto.web.CategoryWebResponse;
-
-import java.util.List;
+import com.marbellin.catalog.dto.CategoryCreateDto;
+import com.marbellin.catalog.dto.CategoryDto;
+import com.marbellin.catalog.dto.CategoryUpdateDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
+    Page<CategoryDto> findAll(Long parentId, Pageable pageable);
 
-    // Admin
-    CategoryAdminResponse create(CategoryAdminCreateRequest request);
+    CategoryDto findById(Long id);
 
-    CategoryAdminResponse update(Long id, CategoryAdminUpdateRequest request);
+    CategoryDto create(CategoryCreateDto dto);
 
-    void delete(Long id);
-
-    CategoryAdminResponse findById(Long id);
-
-    List<CategoryAdminResponse> findAllAsTree();
-
-    // Public Web
-    List<CategoryWebResponse> findAllRootCategories();
-
-    List<CategoryWebResponse> findSubcategoriesByParent(Long parentId);
+    CategoryDto update(Long id, CategoryUpdateDto dto);
 }
